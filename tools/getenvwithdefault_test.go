@@ -18,36 +18,43 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 		format       []string
 	}{
 		{
+			// we get the default value if the environment variable is empty
 			defaultValue: defaultTime,
 			envValue:     "",
 			expected:     defaultTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
+			// we parse a valid environment value
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     checkTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
+			// we get the default value if environment value is invalid
 			defaultValue: defaultTime,
 			envValue:     "invalid",
 			expected:     defaultTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
+			// we get the default value if parse format is invalid
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     defaultTime,
 			format:       []string{"invalid"},
 		},
 		{
+			// we get the default value if no format is specified
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     defaultTime,
 			format:       []string{},
 		},
 		{
+			// we parse a valid environment value if there is at least
+			// one valid format specified
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     checkTime,
@@ -70,6 +77,7 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 	}
 }
 
+// convert a slice of strings into a slice of any
 func listOfAny(items []string) []any {
 	result := make([]any, len(items))
 	for i, v := range items {
