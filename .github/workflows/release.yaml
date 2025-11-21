@@ -10,6 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+
   version:
     runs-on: ubuntu-latest
     outputs:
@@ -28,7 +31,7 @@ jobs:
           branch: main
 
   release:
-    needs: [version]
+    needs: [test, version]
     runs-on: ubuntu-latest
     permissions:
       contents: write

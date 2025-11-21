@@ -1,8 +1,8 @@
 name: Test
 on:
   push:
-    branches:
-      - "*"
+    branches-ignore:
+      - "main"
     paths:
       - "go.*"
       - "**/*.go"
@@ -13,6 +13,7 @@ on:
       - "**/*.go"
       - ".github/workflows/test.yaml"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
