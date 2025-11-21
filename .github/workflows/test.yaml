@@ -6,10 +6,12 @@ on:
     paths:
       - "go.*"
       - "**/*.go"
+      - ".github/workflows/test.yaml"
   pull_request:
     paths:
       - "go.*"
       - "**/*.go"
+      - ".github/workflows/test.yaml"
   workflow_dispatch:
 
 permissions:
@@ -27,9 +29,6 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.6.2
-      - name: build
-        run: |
-          make all
   tests:
     runs-on: ubuntu-latest
     steps:
