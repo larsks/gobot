@@ -1,0 +1,45 @@
+version: "2"
+
+run:
+  timeout: 10m
+
+formatters:
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/larsks/kwctl
+    gofmt:
+      simplify: true
+    gofumpt:
+      extra-rules: false
+
+linters:
+  exclusions:
+    rules:
+      - path: '(.+)_test\.go'
+        linters:
+          - errcheck
+          - unused
+  settings:
+    misspell:
+      locale: US
+    nolintlint:
+      allow-unused: false
+      require-specific: true
+    revive:
+      confidence: 0.1
+    errcheck:
+      exclude-functions:
+        - os.Setenv
+        - os.Unsetenv
+  enable:
+    - bodyclose
+    - errcheck
+    - ineffassign
+    - misspell
+    - nolintlint
+    - revive
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
