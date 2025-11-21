@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -58,11 +59,7 @@ func GetenvWithDefault[T any](name string, defaultValue T, options ...any) (valu
 		if len(options) == 0 {
 			return defaultValue
 		}
-		format, ok := options[0].(string)
-		if !ok {
-			return defaultValue
-		}
-		v, err := time.Parse(format, val)
+		v, err := tryParseTime(val, options)
 		if err != nil {
 			return defaultValue
 		}
@@ -72,4 +69,17 @@ func GetenvWithDefault[T any](name string, defaultValue T, options ...any) (valu
 	}
 
 	return result.(T)
+}
+
+func tryParseTime(val string, formats []any) (time.Time, error) {
+	for _, format := range formats {
+		switch format := format.(type) {
+		case string:
+			if res, err := time.Parse(format, val); err == nil {
+				return res, nil
+			}
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("invalid time format")
 }

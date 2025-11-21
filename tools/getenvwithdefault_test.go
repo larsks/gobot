@@ -8,44 +8,50 @@ import (
 
 func TestGetenvWithDefault_Time(t *testing.T) {
 	defaultTime, _ := time.Parse("2006-01-02", "1900-01-01")
+	checkTimeString := "2011-11-11"
+	checkTime, _ := time.Parse("2006-01-02", checkTimeString)
+
 	tests := []struct {
 		defaultValue time.Time
 		envValue     string
 		expected     time.Time
-		format       string
+		format       []string
 	}{
 		{
 			defaultValue: defaultTime,
 			envValue:     "",
 			expected:     defaultTime,
-			format:       "2006-01-02",
+			format:       []string{"2006-01-02"},
 		},
 		{
 			defaultValue: defaultTime,
-			envValue:     "2011-11-11",
-			expected: func() time.Time {
-				t, _ := time.Parse("2006-01-02", "2011-11-11")
-				return t
-			}(),
-			format: "2006-01-02",
+			envValue:     checkTimeString,
+			expected:     checkTime,
+			format:       []string{"2006-01-02"},
 		},
 		{
 			defaultValue: defaultTime,
 			envValue:     "invalid",
 			expected:     defaultTime,
-			format:       "2006-01-02",
+			format:       []string{"2006-01-02"},
 		},
 		{
 			defaultValue: defaultTime,
-			envValue:     "2011-11-11",
+			envValue:     checkTimeString,
 			expected:     defaultTime,
-			format:       "invalid",
+			format:       []string{"invalid"},
 		},
 		{
 			defaultValue: defaultTime,
-			envValue:     "2011-11-11",
+			envValue:     checkTimeString,
 			expected:     defaultTime,
-			format:       "",
+			format:       []string{},
+		},
+		{
+			defaultValue: defaultTime,
+			envValue:     checkTimeString,
+			expected:     checkTime,
+			format:       []string{"invalid", "invalid", "2006-01-02"},
 		},
 	}
 
@@ -56,15 +62,18 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 			os.Setenv("TEST_TIME_VALUE", item.envValue)
 		}
 
-		var result time.Time
-		if item.format == "" {
-			result = GetenvWithDefault("TEST_TIME_VALUE", item.defaultValue)
-		} else {
-			result = GetenvWithDefault("TEST_TIME_VALUE", item.defaultValue, item.format)
-		}
+		result := GetenvWithDefault("TEST_TIME_VALUE", item.defaultValue, listOfAny(item.format)...)
 
 		if result != item.expected {
 			t.Errorf("given %s, expected %s, got %s", item.envValue, item.expected, result)
 		}
 	}
+}
+
+func listOfAny(items []string) []any {
+	result := make([]any, len(items))
+	for i, v := range items {
+		result[i] = v
+	}
+	return result
 }
