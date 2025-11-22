@@ -25,9 +25,7 @@ import (
 func RangeIterator(input string) iter.Seq2[int, error] {
 	return func(yield func(int, error) bool) {
 		// Split by comma
-		parts := strings.Split(input, ",")
-
-		for _, part := range parts {
+		for part := range strings.SplitSeq(input, ",") {
 			part = strings.TrimSpace(part)
 
 			// Skip empty parts
