@@ -39,4 +39,4 @@ jobs:
           go-version: stable
       - name: test
         run: |
-          go test ./...
+          make test
