@@ -12,49 +12,49 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 	checkTime, _ := time.Parse("2006-01-02", checkTimeString)
 
 	tests := []struct {
+		name         string
 		defaultValue time.Time
 		envValue     string
 		expected     time.Time
 		format       []string
 	}{
 		{
-			// we get the default value if the environment variable is empty
+			name:         "empty environment variable",
 			defaultValue: defaultTime,
 			envValue:     "",
 			expected:     defaultTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
-			// we parse a valid environment value
+			name:         "valid environment variable",
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     checkTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
-			// we get the default value if environment value is invalid
+			name:         "invalid environment variable",
 			defaultValue: defaultTime,
 			envValue:     "invalid",
 			expected:     defaultTime,
 			format:       []string{"2006-01-02"},
 		},
 		{
-			// we get the default value if parse format is invalid
+			name:         "invalid format",
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     defaultTime,
 			format:       []string{"invalid"},
 		},
 		{
-			// we get the default value if no format is specified
+			name:         "empty format",
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     defaultTime,
 			format:       []string{},
 		},
 		{
-			// we parse a valid environment value if there is at least
-			// one valid format specified
+			name:         "multiple formats",
 			defaultValue: defaultTime,
 			envValue:     checkTimeString,
 			expected:     checkTime,
@@ -62,6 +62,16 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 		},
 	}
 
+	/*
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				result := Unindent(tt.input)
+				if result != tt.expected {
+					t.Errorf("Unindent() = %q, expected %q", result, tt.expected)
+				}
+			})
+		}
+	*/
 	for _, item := range tests {
 		if item.envValue == "" {
 			os.Unsetenv("TEST_TIME_VALUE")
@@ -69,11 +79,13 @@ func TestGetenvWithDefault_Time(t *testing.T) {
 			os.Setenv("TEST_TIME_VALUE", item.envValue)
 		}
 
-		result := GetenvWithDefault("TEST_TIME_VALUE", item.defaultValue, listOfAny(item.format)...)
+		t.Run(item.name, func(t *testing.T) {
+			result := GetenvWithDefault("TEST_TIME_VALUE", item.defaultValue, listOfAny(item.format)...)
 
-		if result != item.expected {
-			t.Errorf("given %s, expected %s, got %s", item.envValue, item.expected, result)
-		}
+			if result != item.expected {
+				t.Errorf("given %s, expected %s, got %s", item.envValue, item.expected, result)
+			}
+		})
 	}
 }
 
