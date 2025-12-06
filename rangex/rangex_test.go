@@ -54,6 +54,7 @@ func TestParseRangeExpression(t *testing.T) {
 			assert.NoError(t, err, item.expr)
 		} else {
 			assert.Error(t, err, item.expr)
+			continue
 		}
 
 		have := []int{}
@@ -64,4 +65,17 @@ func TestParseRangeExpression(t *testing.T) {
 		assert.Equal(t, len(item.expected), len(have), item.expr)
 		assert.EqualValues(t, item.expected, have, item.expr)
 	}
+}
+
+func TestAddRange(t *testing.T) {
+	x := NewRangeExpression()
+	x.AddRange(NewRange(1, 3))
+	x.AddRange(NewRange(7, 10))
+
+	have := []int{}
+	for i := range x.Iterate() {
+		have = append(have, i)
+	}
+
+	assert.EqualValues(t, []int{1, 2, 3, 7, 8, 9, 10}, have)
 }

@@ -66,25 +66,29 @@ func (r Range) Iterate() iter.Seq[int] {
 	}
 }
 
-func ParseRangeExpression(expr string) (RangeExpression, error) {
+func NewRangeExpression() *RangeExpression {
+	return &RangeExpression{}
+}
+
+func ParseRangeExpression(expr string) (*RangeExpression, error) {
 	r := RangeExpression{}
 
 	parts := strings.SplitSeq(expr, ",")
 	for part := range parts {
 		parsed, err := ParseRange(part)
 		if err != nil {
-			return RangeExpression{}, fmt.Errorf("invalid range expression: %w", err)
+			return nil, fmt.Errorf("invalid range expression: %w", err)
 		}
 
 		r.ranges = append(r.ranges, parsed)
 	}
 
-	return r, nil
+	return &r, nil
 }
 
-func (r RangeExpression) Iterate() iter.Seq[int] {
+func (x *RangeExpression) Iterate() iter.Seq[int] {
 	return func(yield func(int) bool) {
-		for _, r := range r.ranges {
+		for _, r := range x.ranges {
 			for i := range r.Iterate() {
 				if !yield(i) {
 					return
@@ -92,4 +96,8 @@ func (r RangeExpression) Iterate() iter.Seq[int] {
 			}
 		}
 	}
+}
+
+func (x *RangeExpression) AddRange(r Range) {
+	x.ranges = append(x.ranges, r)
 }
