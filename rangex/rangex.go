@@ -19,6 +19,7 @@ type (
 	}
 )
 
+// NewRange returns a new Range value with the given left/right bounds.
 func NewRange(left, right int) Range {
 	return Range{
 		left:  left,
@@ -26,6 +27,8 @@ func NewRange(left, right int) Range {
 	}
 }
 
+// ParseRange parses a range expression (<left>-<right>) and returns
+// a new Range value.
 func ParseRange(expr string) (Range, error) {
 	parts := strings.Split(expr, "-")
 
@@ -57,6 +60,9 @@ func (r Range) String() string {
 	return fmt.Sprintf("<Range %d-%d>", r.left, r.right)
 }
 
+// Iterate is an iterator over a range:
+//
+//	for i := r.Iterate() { ... }
 func (r Range) Iterate() iter.Seq[int] {
 	return func(yield func(int) bool) {
 		for i := r.left; i <= r.right; i++ {
@@ -67,6 +73,7 @@ func (r Range) Iterate() iter.Seq[int] {
 	}
 }
 
+// Expand returns a list of all the values contained in the range.
 func (r Range) Expand() []int {
 	val := []int{}
 
@@ -77,6 +84,8 @@ func (r Range) Expand() []int {
 	return val
 }
 
+// Contains returns true if the given value is contained in the range,
+// false otherwise.
 func (r Range) Contains(val int) bool {
 	return val >= r.left && val <= r.right
 }
