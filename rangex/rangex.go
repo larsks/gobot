@@ -66,6 +66,20 @@ func (r Range) Iterate() iter.Seq[int] {
 	}
 }
 
+func (r Range) Expand() []int {
+	val := []int{}
+
+	for i := range r.Iterate() {
+		val = append(val, i)
+	}
+
+	return val
+}
+
+func (r Range) Contains(val int) bool {
+	return val >= r.left && val <= r.right
+}
+
 func NewRangeExpression() *RangeExpression {
 	return &RangeExpression{}
 }
@@ -100,4 +114,24 @@ func (x *RangeExpression) Iterate() iter.Seq[int] {
 
 func (x *RangeExpression) AddRange(r Range) {
 	x.ranges = append(x.ranges, r)
+}
+
+func (x *RangeExpression) Expand() []int {
+	val := []int{}
+
+	for i := range x.Iterate() {
+		val = append(val, i)
+	}
+
+	return val
+}
+
+func (x *RangeExpression) Contains(val int) bool {
+	for _, r := range x.ranges {
+		if r.Contains(val) {
+			return true
+		}
+	}
+
+	return false
 }
