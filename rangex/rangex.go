@@ -98,6 +98,11 @@ func (r Range) Right() int {
 	return r.right
 }
 
+// Size returns the size (numer of integers) contained in the Range.
+func (r Range) Size() int {
+	return r.right - r.left + 1
+}
+
 func NewRangeExpression() *RangeExpression {
 	return &RangeExpression{}
 }
@@ -203,4 +208,13 @@ func (x *RangeExpression) Simplify() *RangeExpression {
 	}
 
 	return result
+}
+
+// Size returns the size (numer of integers) contained in the RangeExpression.
+func (x *RangeExpression) Size() int {
+	size := 0
+	for _, r := range x.ranges {
+		size += r.Size()
+	}
+	return size
 }
