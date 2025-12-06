@@ -8,58 +8,64 @@ import (
 
 func TestParseRange(t *testing.T) {
 	items := []struct {
+		name     string
 		expr     string
 		expected []int
 		valid    bool
 	}{
-		{"1-10", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, true},
-		{"1", []int{1}, true},
-		{"1-2-3", []int{}, false},
+		{"simple range", "1-10", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, true},
+		{"single item range", "1", []int{1}, true},
+		{"invalid range", "1-2-3", []int{}, false},
 	}
 
 	for _, item := range items {
-		r, err := ParseRange(item.expr)
-		if item.valid {
-			assert.NoError(t, err, item.expr)
-		} else {
-			assert.Error(t, err, item.expr)
-			continue
-		}
+		t.Run(item.name, func(t *testing.T) {
+			r, err := ParseRange(item.expr)
+			if item.valid {
+				assert.NoError(t, err, item.expr)
+			} else {
+				assert.Error(t, err, item.expr)
+				return
+			}
 
-		have := r.Expand()
-		assert.Equal(t, len(item.expected), len(have), item.expr)
-		assert.EqualValues(t, item.expected, have, item.expr)
+			have := r.Expand()
+			assert.Equal(t, len(item.expected), len(have), item.expr)
+			assert.EqualValues(t, item.expected, have, item.expr)
+		})
 	}
 }
 
 func TestParseRangeExpression(t *testing.T) {
 	items := []struct {
+		name     string
 		expr     string
 		expected []int
 		valid    bool
 	}{
-		{"1-3,4,8-10", []int{1, 2, 3, 4, 8, 9, 10}, true},
-		{"1,2,3", []int{1, 2, 3}, true},
-		{"1-3,", []int{}, false},
-		{"", []int{}, false},
+		{"mix of simple and single digit ranges", "1-3,4,8-10", []int{1, 2, 3, 4, 8, 9, 10}, true},
+		{"only single digits", "1,2,3", []int{1, 2, 3}, true},
+		{"invalid trailing comma", "1-3,", []int{}, false},
+		{"empty expression", "", []int{}, false},
 	}
 
 	for _, item := range items {
-		x, err := ParseRangeExpression(item.expr)
-		if item.valid {
-			assert.NoError(t, err, item.expr)
-		} else {
-			assert.Error(t, err, item.expr)
-			continue
-		}
+		t.Run(item.name, func(t *testing.T) {
+			x, err := ParseRangeExpression(item.expr)
+			if item.valid {
+				assert.NoError(t, err, item.expr)
+			} else {
+				assert.Error(t, err, item.expr)
+				return
+			}
 
-		have := []int{}
-		for i := range x.Iterate() {
-			have = append(have, i)
-		}
+			have := []int{}
+			for i := range x.Iterate() {
+				have = append(have, i)
+			}
 
-		assert.Equal(t, len(item.expected), len(have), item.expr)
-		assert.EqualValues(t, item.expected, have, item.expr)
+			assert.Equal(t, len(item.expected), len(have), item.expr)
+			assert.EqualValues(t, item.expected, have, item.expr)
+		})
 	}
 }
 
