@@ -3,6 +3,7 @@ package rangex
 import (
 	"fmt"
 	"iter"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -142,4 +143,55 @@ func (x *RangeExpression) Contains(val int) bool {
 	}
 
 	return false
+}
+
+// Simplify returns a new RangeExpression with overlapping or adjacent ranges
+// coalesced.
+func (x *RangeExpression) Simplify() *RangeExpression {
+	result := NewRangeExpression()
+
+	if len(x.ranges) == 0 {
+		return result
+	}
+
+	if len(x.ranges) == 1 {
+		result.AddRange(x.ranges[0])
+		return result
+	}
+
+	// Copy and sort ranges by left bound
+	sorted := make([]Range, len(x.ranges))
+	copy(sorted, x.ranges)
+	slices.SortFunc(sorted, func(a, b Range) int {
+		return a.Left() - b.Left()
+	})
+
+	// Merge overlapping and adjacent ranges
+	merged := []Range{}
+	current := sorted[0]
+
+	for i := 1; i < len(sorted); i++ {
+		next := sorted[i]
+
+		// Check if ranges overlap or are adjacent
+		if current.Right() >= next.Left()-1 {
+			// Merge by extending current range
+			if next.Right() > current.Right() {
+				current = NewRange(current.Left(), next.Right())
+			}
+		} else {
+			// Ranges don't overlap or touch, save current and move to next
+			merged = append(merged, current)
+			current = next
+		}
+	}
+
+	// Add the final range
+	merged = append(merged, current)
+
+	for _, r := range merged {
+		result.AddRange(r)
+	}
+
+	return result
 }
