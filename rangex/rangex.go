@@ -94,7 +94,7 @@ func ParseRangeExpression(expr string) (*RangeExpression, error) {
 			return nil, fmt.Errorf("invalid range expression: %w", err)
 		}
 
-		r.ranges = append(r.ranges, parsed)
+		r.AddRange(parsed)
 	}
 
 	return &r, nil
