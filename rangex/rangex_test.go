@@ -71,3 +71,19 @@ func TestAddRange(t *testing.T) {
 	have := x.Expand()
 	assert.EqualValues(t, []int{1, 2, 3, 7, 8, 9, 10}, have)
 }
+
+func TestRangeContains(t *testing.T) {
+	r := NewRange(1, 1000)
+
+	assert.True(t, r.Contains(100))
+	assert.False(t, r.Contains(2000))
+}
+
+func TestRangeExpressionContains(t *testing.T) {
+	x, err := ParseRangeExpression("1-20,50-100")
+	assert.NoError(t, err)
+	assert.True(t, x.Contains(10))
+	assert.True(t, x.Contains(60))
+	assert.False(t, x.Contains(30))
+	assert.False(t, x.Contains(101))
+}
