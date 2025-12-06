@@ -80,6 +80,14 @@ func (r Range) Contains(val int) bool {
 	return val >= r.left && val <= r.right
 }
 
+func (r Range) Left() int {
+	return r.left
+}
+
+func (r Range) Right() int {
+	return r.right
+}
+
 func NewRangeExpression() *RangeExpression {
 	return &RangeExpression{}
 }
